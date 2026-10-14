@@ -1,0 +1,19 @@
+__pycache__/
+*.py[cod]
+*.log
+.pytest_cache/
+.mypy_cache/
+.idea/
+.vscode/
+*.zip
+
+# 用户剧本、生成项目和输出结果只保存在本机
+输入剧本/*
+!输入剧本/.gitkeep
+输出结果/*
+!输出结果/.gitkeep
+projects/*
+!projects/.gitkeep
+
+# 本地运行配置可能包含个人使用偏好
+gui_settings.local.json
