@@ -8,6 +8,7 @@ import subprocess
 import shutil
 import sys
 import threading
+import hashlib
 import tkinter as tk
 from datetime import datetime
 from pathlib import Path
@@ -33,6 +34,7 @@ from stage10_manager import run_stage10
 from stage11_manager import run_stage11
 from stage12_manager import run_stage12
 from codex_provider import CodexProvider
+from text_io import read_script_text
 
 
 STAGES = [(0, "项目初始化"), (1, "剧本解析"), (2, "项目规则"), (3, "资产库"), (4, "资产提示词"), (5, "标准分镜"), (6, "Seedance 2.0"), (7, "Seedance 2.5"), (8, "即梦 2.0"), (9, "即梦 2.5"), (10, "连续性审核"), (11, "历史真实性审核"), (12, "AI生成风险终审")]
@@ -82,7 +84,10 @@ class PipelineRunner:
         if self._should_run(12): self._stage(12, run_stage12, None)
 
     def _run_mock(self):
-        # 离线模式复用已有离线测试供应商，绝不伪装成真实 AI。
+        from mock.script_derived_pipeline import run as run_script_derived_mock
+        run_script_derived_mock(self.project)
+        return
+        # Legacy fixture path retained only for unit tests, never used by GUI.
         from offline_test_stage05 import StoryboardProvider, prepare
         from offline_test_stage04 import AssetProvider, PromptProvider, TextProvider
         from stage01_manager import REQUIRED_HEADINGS as H1
@@ -132,7 +137,7 @@ class PipelineRunner:
 
 class App(tk.Tk):
     def __init__(self):
-        super().__init__(); self.title("AI影视助手"); self.geometry("1100x720"); self.minsize(900, 600)
+        super().__init__(); self.title("AI影视助手"); self.geometry("1100x720+80+60"); self.minsize(900, 600); self.deiconify(); self.lift(); self.attributes("-topmost", True); self.after(500, lambda: self.attributes("-topmost", False))
         self.script = None; self.project = None; self.worker = None; self.events = queue.Queue(); self.stage_rows = {}
         self.mode = tk.StringVar(value="auto"); self.ai_mode = tk.StringVar(value="real"); self.offline_var = tk.BooleanVar(value=False); self.project_name = tk.StringVar(); self.detail_var = tk.BooleanVar(value=False)
         self.models = {name: tk.BooleanVar(value=True) for name in MODEL_STAGES}
@@ -161,7 +166,9 @@ class App(tk.Tk):
     def choose_script(self):
         path = filedialog.askopenfilename(title="选择剧本", filetypes=[("剧本文件", "*.txt *.md"), ("所有文件", "*.*")])
         if path:
-            self.script = Path(path); self.project_name.set(safe_project_name(self.script.stem)); self.script_label.configure(text=f"{self.script.name}\n{self.script}\n大小：{self.script.stat().st_size} 字节", foreground="#222")
+            try: info = read_script_text(Path(path))
+            except ValueError as error: return messagebox.showerror("剧本编码错误", str(error))
+            self.script = Path(path); self.project_name.set(safe_project_name(self.script.stem)); self.script_label.configure(text=f"{self.script.name}\n{self.script}\n编码：{info['encoding']}\n大小：{self.script.stat().st_size} 字节", foreground="#222")
 
     def start(self):
         if not self.script or not self.script.is_file(): return messagebox.showwarning("需要剧本", "请先选择 .txt 或 .md 剧本。")
@@ -177,7 +184,10 @@ class App(tk.Tk):
                     renamed = PROJECTS_DIR / f"{name}_v02"
                 self.project = Path(shutil.move(str(self.project), str(renamed)))
                 config_path = self.project / "project.json"
-                config = json.loads(config_path.read_text(encoding="utf-8")); config["project_id"] = self.project.name; config["project_name"] = name; config_path.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                config = json.loads(config_path.read_text(encoding="utf-8")); config["project_id"] = name; config["project_name"] = name; config["copied_script_path"] = str(self.project / config_path.parent.joinpath(Path(config.get("copied_script_path", "00_原始剧本.txt")).name)); config["source_script_name"] = self.script.name; config["source_script_path"] = str(self.script); config["source_script_sha256"] = hashlib.sha256(self.script.read_bytes()).hexdigest(); config_path.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                assets_path = self.project / "assets.json"
+                if assets_path.is_file():
+                    assets = json.loads(assets_path.read_text(encoding="utf-8")); assets["project_id"] = name; assets_path.write_text(json.dumps(assets, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
             self.show_progress(); selected = {n for n, v in self.models.items() if v.get()}; self.worker = PipelineRunner(self.project, self.ai_mode.get() == "offline", self.mode.get(), selected, self.events.put); threading.Thread(target=self.worker.run, daemon=True).start()
         except Exception as error: messagebox.showerror("项目初始化失败", friendly_error(error))
 

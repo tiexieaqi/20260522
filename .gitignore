@@ -14,6 +14,16 @@ __pycache__/
 !输出结果/.gitkeep
 projects/*
 !projects/.gitkeep
+_cross_tmp/
+logs/
+临时 Codex 文件/
+codex_exec_probe*.jsonl
+auth.json
+**/auth.json
+**/cookies*
+*.pem
+*.key
+*.token
 
 # 本地运行配置可能包含个人使用偏好
 gui_settings.local.json

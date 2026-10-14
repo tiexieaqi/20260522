@@ -85,4 +85,10 @@ def run_stage12(project_dir: Path) -> str:
         atomic_json_write(project_dir / "project_final_status.json", final)
         return render_report(report)
 
-    return StageRunner(project_dir, 12, REPORT_NAME, "Stage 12 AI生成风险终审").run(operation, lambda text: text.startswith("# AI生成风险终审") and "Generation Gate" in text)
+    result = StageRunner(project_dir, 12, REPORT_NAME, "Stage 12 AI生成风险终审").run(operation, lambda text: text.startswith("# AI生成风险终审") and "Generation Gate" in text)
+    final_path = project_dir / "project_final_status.json"
+    if final_path.is_file():
+        final = json.loads(final_path.read_text(encoding="utf-8"))
+        final.setdefault("stage_completion", {})["12"] = "completed"
+        atomic_json_write(final_path, final)
+    return result

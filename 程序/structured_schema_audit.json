@@ -1,0 +1,138 @@
+[
+  {
+    "stage": "stage03",
+    "schema_name": "stage03",
+    "valid_before": false,
+    "issues_before": [
+      {
+        "path": "properties.assets.items",
+        "type": "missing_additionalProperties_false"
+      },
+      {
+        "path": "properties.assets.items",
+        "type": "required_mismatch",
+        "required": [
+          "category",
+          "canonical_name",
+          "aliases",
+          "source_evidence",
+          "versions"
+        ],
+        "properties": [
+          "category",
+          "canonical_name",
+          "aliases",
+          "asset_type",
+          "importance",
+          "story_role",
+          "needs_review",
+          "locked_fields",
+          "mutable_fields",
+          "source_evidence",
+          "details",
+          "versions"
+        ]
+      },
+      {
+        "path": "properties.assets.items.properties.details",
+        "type": "missing_additionalProperties_false"
+      }
+    ],
+    "fix_applied": true,
+    "valid_after": true
+  },
+  {
+    "stage": "stage04",
+    "schema_name": "stage04",
+    "valid_before": false,
+    "issues_before": [
+      {
+        "path": "properties.prompts.items",
+        "type": "missing_additionalProperties_false"
+      }
+    ],
+    "fix_applied": true,
+    "valid_after": true
+  },
+  {
+    "stage": "stage05",
+    "schema_name": "stage05",
+    "valid_before": false,
+    "issues_before": [
+      {
+        "path": "$",
+        "type": "missing_additionalProperties_false"
+      }
+    ],
+    "fix_applied": true,
+    "valid_after": true
+  },
+  {
+    "stage": "stage06",
+    "schema_name": "stage06",
+    "valid_before": false,
+    "issues_before": [
+      {
+        "path": "$",
+        "type": "missing_additionalProperties_false"
+      },
+      {
+        "path": "properties.shots",
+        "type": "missing_additionalProperties_false"
+      }
+    ],
+    "fix_applied": true,
+    "valid_after": true
+  },
+  {
+    "stage": "stage07",
+    "schema_name": "stage07",
+    "valid_before": false,
+    "issues_before": [
+      {
+        "path": "$",
+        "type": "missing_additionalProperties_false"
+      },
+      {
+        "path": "properties.shots",
+        "type": "missing_additionalProperties_false"
+      }
+    ],
+    "fix_applied": true,
+    "valid_after": true
+  },
+  {
+    "stage": "stage08",
+    "schema_name": "stage08",
+    "valid_before": false,
+    "issues_before": [
+      {
+        "path": "$",
+        "type": "missing_additionalProperties_false"
+      },
+      {
+        "path": "properties.shots",
+        "type": "missing_additionalProperties_false"
+      }
+    ],
+    "fix_applied": true,
+    "valid_after": true
+  },
+  {
+    "stage": "stage09",
+    "schema_name": "stage09",
+    "valid_before": false,
+    "issues_before": [
+      {
+        "path": "$",
+        "type": "missing_additionalProperties_false"
+      },
+      {
+        "path": "properties.shots",
+        "type": "missing_additionalProperties_false"
+      }
+    ],
+    "fix_applied": true,
+    "valid_after": true
+  }
+]
