@@ -15,7 +15,7 @@ ERROR_LOG = LOG_DIR / "launcher_error.log"
 
 def main() -> None:
     sys.path.insert(0, str(PROGRAM_DIR))
-    runpy.run_path(str(PROGRAM_DIR / "gui_app.py"), run_name="__main__")
+    runpy.run_path(str(PROGRAM_DIR / "gui_v2_app.py"), run_name="__main__")
 
 
 if __name__ == "__main__":
