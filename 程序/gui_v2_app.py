@@ -14,7 +14,11 @@ class App(tk.Tk):
  def select(self,event=None):
   if not self.list.curselection(): return
   self.selected=self.filtered[self.list.curselection()[0]]; p=self.selected; self.detail.configure(state='normal'); self.detail.delete('1.0','end'); self.detail.insert('end',f'项目：{p.name}\n状态：{p.state}\n路径：{p.path}\n进度：{p.progress[0]}/{p.progress[1]} ({p.progress[2]}%)\n范围：{p.scope}'); self.detail.configure(state='disabled'); self.stage.delete(*self.stage.get_children()); [self.stage.insert('','end',text=f'Stage {n:02d}｜{STAGE_NAMES[n]}',values=(p.statuses.get(n,'pending'),)) for n in range(1,13)]; self.history.delete(0,'end'); [self.history.insert('end',f"{x.get('timestamp','')[:16]} Stage {x.get('stage','-')} {x.get('status','')}") for x in load(p.path)[-10:]]
- def start_mock(self): self.dynamic.set('运行动态：离线 Mock 控制器入口已连接；真实 AI 在测试模式下禁止调用。')
+ def start_mock(self): self.dynamic.set('运行动态：开始制作（OFFLINE_GUI_TEST_MODE，禁止真实 AI）'); self.startbtn.configure(state='disabled')
+ def continue_mock(self): self.dynamic.set('运行动态：继续制作（OFFLINE_GUI_TEST_MODE）')
+ def retry_stage(self): self.dynamic.set('运行动态：重试当前失败 Stage（OFFLINE_GUI_TEST_MODE）')
+ def resume_failed(self): self.dynamic.set('运行动态：从失败 Stage 继续（OFFLINE_GUI_TEST_MODE）')
+ def stop_after_current(self): self.dynamic.set('将在当前阶段完成后停止')
  def tech(self):
   if not self.selected: return
   w=tk.Toplevel(self); w.title('技术详情'); t=tk.Text(w,width=90,height=20); t.pack(fill='both',expand=True); t.insert('end',f'项目路径：{self.selected.path}\n状态：{self.selected.state}\n错误类型：无\nrequested_model：无\nactual_model：无\n')
